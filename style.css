@@ -1,0 +1,359 @@
+/**
+ * リバーシ - レスポンシブスタイルシート
+ *
+ * 対応環境: Windows Chrome / Android Chrome / iPhone Safari
+ * デザイン方針:
+ *   - ダークテーマ（背景: #1a1a2e = ネイビー系）
+ *   - モバイルファースト: 画面幅・高さに応じてサイズを調整
+ *   - タッチ操作対応: tap-highlight無効化、touch-action設定
+ */
+
+/* ===== リセット・基本設定 ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* iOS Safariでのタップ時の青いハイライトを無効化 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== CSS変数（カラーパレット） ===== */
+:root {
+  --board-color: #2e8b57;       /* 盤面のマス（緑） */
+  --board-border: #1a5c38;      /* 盤面の外枠・マス境界線（濃い緑） */
+  --cell-border: #1a5c38;       /* セル間の境界線 */
+  --bg-color: #1a1a2e;          /* ページ背景（ネイビー） */
+  --text-color: #e0e0e0;        /* 通常テキスト（明るいグレー） */
+  --accent: #4fc3f7;            /* アクセントカラー（ライトブルー、AI思考中などに使用） */
+  --btn-bg: #2e8b57;            /* ボタン背景色 */
+  --btn-hover: #3ba06a;         /* ボタンホバー色 */
+  --legal-hint: rgba(255, 255, 255, 0.25); /* 合法手マーカーの色 */
+}
+
+/* ===== ページ全体 ===== */
+html, body {
+  height: 100%;
+  overflow: hidden; /* スクロールを無効化（1画面に収める） */
+}
+
+body {
+  /* システムフォント（各OSのデフォルト読みやすいフォント）を使用 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* ダブルタップによるズームを防ぐ（タップの応答性を向上） */
+  touch-action: manipulation;
+}
+
+/* ===== アプリコンテナ ===== */
+#app {
+  width: 100%;
+  max-width: 500px; /* デスクトップでも広がりすぎないよう制限 */
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/** 非表示クラス（画面切り替えに使用） */
+.hidden {
+  display: none !important;
+}
+
+/* ===== 開始画面 ===== */
+#start-screen {
+  text-align: center;
+  animation: fadeIn 0.5s ease; /* フェードインアニメーション */
+}
+
+#start-screen h1 {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4); /* タイトルに奥行き感 */
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+/* 先攻・後攻ボタンのコンテナ */
+.choice-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap; /* 画面幅が狭い場合は折り返す */
+}
+
+/* 先攻・後攻選択ボタン */
+.btn-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 32px;
+  border: 2px solid #444;
+  border-radius: 16px;
+  background: #2a2a3e;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 140px;
+}
+
+/* ホバー・タップ時のフィードバック */
+.btn-choice:hover, .btn-choice:active {
+  border-color: var(--accent);
+  background: #333350;
+  transform: translateY(-2px); /* 少し浮き上がるエフェクト */
+}
+
+/* ===== 石アイコン（開始画面・スコア表示に使用） ===== */
+.disc-icon {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* 小さいサイズ（スコアパネル用） */
+.disc-icon.small {
+  width: 24px;
+  height: 24px;
+}
+
+/* 黒石: 放射状グラデーションで立体感を表現 */
+.black-icon {
+  background: radial-gradient(circle at 35% 35%, #555, #111);
+}
+
+/* 白石: 放射状グラデーションで立体感を表現 */
+.white-icon {
+  background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+}
+
+/* ===== ゲーム画面 ===== */
+#game-screen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===== 情報バー（スコアと手番表示） ===== */
+#info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+}
+
+/* スコアパネル（石アイコン + 数字） */
+.score-panel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* 手番表示（「あなたの番」「AI思考中...」など） */
+#turn-indicator {
+  font-size: 1rem;
+  padding: 4px 16px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  white-space: nowrap;
+}
+
+/* AI思考中の色変更（アクセントカラー） */
+#turn-indicator.thinking {
+  background: rgba(79, 195, 247, 0.2);
+  color: var(--accent);
+}
+
+/* ===== 盤面 ===== */
+
+/* 外枠コンテナ: 盤面の影と角丸 */
+#board-container {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1; /* 常に正方形を維持 */
+  padding: 4px;
+  background: var(--board-border); /* 外枠色（セル間の隙間に見える） */
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* 8×8グリッド */
+#board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+  gap: 1px; /* セル間の隙間（= セル境界線として見える） */
+  background: var(--cell-border);
+}
+
+/* 盤面の各マス */
+.cell {
+  background: var(--board-color); /* 緑のマス */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+  position: relative; /* 合法手マーカーの::after配置に必要 */
+}
+
+/* 合法手マス: カーソルをポインターに変更 */
+.cell.legal {
+  cursor: pointer;
+}
+
+/* 合法手マーカー: 薄い小さな丸を中央に表示 */
+.cell.legal::after {
+  content: '';
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: var(--legal-hint);
+  position: absolute;
+}
+
+/* ホバー・タップ時にマーカーを大きくして視認性向上 */
+.cell.legal:hover::after,
+.cell.legal:active::after {
+  width: 40%;
+  height: 40%;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* ===== 石 ===== */
+
+/* 石の基本スタイル（黒・白共通） */
+.disc {
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+
+.disc.black {
+  background: radial-gradient(circle at 35% 35%, #555, #111);
+}
+
+.disc.white {
+  background: radial-gradient(circle at 35% 35%, #fff, #ccc);
+}
+
+/**
+ * 反転アニメーション:
+ *   水平方向にスケールを0にして（コインを立てたように）から戻す。
+ *   CSS側で色が変わっているため、正面から見ると色が入れ替わって見える。
+ */
+.disc.flip {
+  animation: flipDisc 0.4s ease;
+}
+
+@keyframes flipDisc {
+  0%   { transform: scale(1, 1); }
+  50%  { transform: scale(0.1, 1); } /* 横幅を一瞬ほぼゼロに */
+  100% { transform: scale(1, 1); }
+}
+
+/**
+ * 石を置くアニメーション:
+ *   スケール0から1.15に膨らんで1に落ち着く（弾む感じ）。
+ */
+.disc.place {
+  animation: placeDisc 0.3s ease;
+}
+
+@keyframes placeDisc {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); }         /* 少し大きくオーバーシュート */
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/**
+ * 直前に置かれたマスのハイライト:
+ *   金色の内側ボーダーで目立たせる。
+ */
+.cell.last-move {
+  box-shadow: inset 0 0 0 2px rgba(255, 215, 0, 0.7);
+}
+
+/* ===== メッセージエリア（パス通知・勝敗結果） ===== */
+#message-area {
+  min-height: 32px;
+  margin: 10px 0;
+  font-size: 1rem;
+  text-align: center;
+  color: #aaa;
+}
+
+/* ゲーム終了時の勝敗表示（大きく白く） */
+#message-area.result {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* ===== もう一度遊ぶボタン ===== */
+.btn-action {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--btn-bg);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: none; /* デフォルトは非表示 */
+}
+
+.btn-action:hover, .btn-action:active {
+  background: var(--btn-hover);
+}
+
+/* .visible クラスが付いたら表示（ゲーム終了時） */
+.btn-action.visible {
+  display: block;
+}
+
+/* ===== フェードインアニメーション ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== レスポンシブ対応 ===== */
+
+/* 縦に短い画面（スマートフォン横向きなど）のコンパクト化 */
+@media (max-height: 700px) {
+  #start-screen h1 { font-size: 2rem; }
+  .btn-choice { padding: 16px 24px; min-width: 120px; }
+  .disc-icon { width: 36px; height: 36px; }
+  #info-bar { padding: 4px 12px; margin-bottom: 4px; }
+  #message-area { margin: 6px 0; min-height: 24px; }
+}
+
+/* 幅が狭い画面（古いAndroidなど） */
+@media (max-width: 360px) {
+  #app { padding: 6px; }
+  .choice-buttons { gap: 12px; }
+  .btn-choice { padding: 14px 20px; font-size: 0.95rem; }
+}

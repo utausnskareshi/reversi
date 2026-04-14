@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>リバーシ</title>
+<meta name="description" content="AIと対戦できるリバーシゲーム">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="リバーシ">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 開始画面 -->
+    <div id="start-screen">
+      <h1>リバーシ</h1>
+      <p class="subtitle">先攻・後攻を選んでください</p>
+      <div class="choice-buttons">
+        <button id="btn-first" class="btn-choice">
+          <span class="disc-icon black-icon"></span>
+          <span>先攻（黒）</span>
+        </button>
+        <button id="btn-second" class="btn-choice">
+          <span class="disc-icon white-icon"></span>
+          <span>後攻（白）</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div id="game-screen" class="hidden">
+      <div id="info-bar">
+        <div class="score-panel">
+          <span class="disc-icon black-icon small"></span>
+          <span id="black-count">2</span>
+        </div>
+        <div id="turn-indicator">あなたの番</div>
+        <div class="score-panel">
+          <span class="disc-icon white-icon small"></span>
+          <span id="white-count">2</span>
+        </div>
+      </div>
+
+      <div id="board-container">
+        <div id="board"></div>
+      </div>
+
+      <div id="message-area"></div>
+
+      <button id="btn-restart" class="btn-action">もう一度遊ぶ</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>
+</html>
