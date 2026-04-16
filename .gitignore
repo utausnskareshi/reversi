@@ -1,0 +1,31 @@
+# 依存パッケージ
+node_modules/
+
+# ビルド生成物（release.wasmは除く）
+build/release.d.ts
+build/release.js
+build/release.wasm.map
+build/release.wat
+build/debug.*
+
+# AssemblyScript デバッグ用
+*.wat
+*.wasm.map
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# エディタ設定
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ローカル開発設定
+.claude/
+
+# ログ
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
